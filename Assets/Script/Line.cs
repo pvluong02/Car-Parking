@@ -11,12 +11,13 @@ public class Line : MonoBehaviour
 
     [HideInInspector] public List<Vector3> points = new();
     [HideInInspector] public int pointCount = 0;
-
+    [HideInInspector] public float length = 0f;
     private float pointFixedYAxis;
+    private Vector3 prevPoint;
 
     private void Start()
     {
-        pointFixedYAxis = lineRenderer.GetPosition(0).y; // cố định hình vẽ theo trục y
+        pointFixedYAxis = lineRenderer.GetPosition(0).y; // cố định hình vẽ theo trục y tại vị trí 0
         Clear();
     }
     public void Init()
@@ -29,6 +30,7 @@ public class Line : MonoBehaviour
         lineRenderer.positionCount = 0;
         pointCount = 0;
         points.Clear();
+        length = 0;
     }
 
     public void AddPoint(Vector3 newPoint)
@@ -39,10 +41,18 @@ public class Line : MonoBehaviour
         {
             return;
         }
-        else points.Add(newPoint);
+
+        if (pointCount == 0)
+        {
+            prevPoint = newPoint;
+        }
+
+        points.Add(newPoint);
 
         pointCount++;
 
+        length += Vector3.Distance(prevPoint, newPoint);
+        prevPoint = newPoint;
         // cập nhật linerender
         lineRenderer.positionCount = pointCount;
         lineRenderer.SetPosition(pointCount-1, newPoint);
